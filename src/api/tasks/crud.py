@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from ...core.models import Task, User
 from ...core.models.db_helper import get_async_session
 from .schemas import TaskCreate
 from ...core.models import User, Task
+=======
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from ...core.models import Task, User
+>>>>>>> dd2ad76 (crud funcs of user's tasks)
 from sqlalchemy import select
 from typing import Annotated
 from annotated_types import MinLen, MaxLen
@@ -12,19 +18,78 @@ async def create_task(
     username: str,
     description: Annotated[str, MinLen(3), MaxLen(1000)],
     session: AsyncSession,
+<<<<<<< HEAD
 ):
+=======
+) -> Task:
+>>>>>>> dd2ad76 (crud funcs of user's tasks)
     query = await session.execute(
         select(User).where(User.username == username)
     )
     user = query.scalar_one_or_none()
+<<<<<<< HEAD
 
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     
     task = Task(
         user_id=user.username,
+=======
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Пользователь не найден"
+        )
+    task = Task(
+        username=user.username,
+>>>>>>> dd2ad76 (crud funcs of user's tasks)
         description=description,
     )
     session.add(task)
     await session.commit()
+<<<<<<< HEAD
     return {"status": "ok", "task_id": task.id}
+=======
+    return {"status": "ok", "task_id": task.id}
+
+async def get_all_tasks(
+    session: AsyncSession,
+) -> list[Task]:
+    query = select(Task).order_by(Task.id)
+    result = await session.execute(query)
+    tasks = result.scalars().all()
+    return {"tasks": list(tasks)}
+
+async def get_user_tasks(
+    username: str,
+    session: AsyncSession,
+) -> list[Task]:
+    query = select(Task).where(Task.username == username)
+    result = await session.execute(query)
+    user_tasks = result.scalars().all()
+    return {f"{username}'s tasks": user_tasks}
+
+async def delete_all_tasks(session: AsyncSession) -> None:
+    query = await session.execute(
+        select(Task).order_by(Task.id)
+    )
+    tasks = query.scalars().all()
+    for task in tasks:
+        await session.delete(task)
+    await session.commit()
+    return {"message": "ok"}
+
+async def delete_user_tasks(
+    username: str,
+    session: AsyncSession
+) -> None:
+    query = await session.execute(
+        select(Task).where(Task.username == username)
+    )
+    tasks = query.scalars().all()
+    for task in tasks: 
+        await session.delete(task)
+    await session.commit()
+    return {"message": "ok"}
+
+>>>>>>> dd2ad76 (crud funcs of user's tasks)
