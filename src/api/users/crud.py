@@ -19,20 +19,12 @@ async def get_user_by_username(
     user = result.scalar_one_or_none()
     return user
 
-<<<<<<< HEAD
-async def delete_all_users(
-    session: AsyncSession,
-) -> None:
-    query = select(User).order_by(User.id)
-    await session.delete(query)
-=======
 async def delete_all_users(session: AsyncSession) -> dict:
     query = await session.execute(select(User))
     users = query.scalars().all()
     for user in users:
         await session.delete(user)
     await session.commit()
->>>>>>> ebf6a78 (crud funcs of users)
     return {"message": "ok"}
 
 async def delete_user_by_username(
