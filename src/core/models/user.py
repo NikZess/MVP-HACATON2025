@@ -9,14 +9,12 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(255))
     username: Mapped[str] = mapped_column(String(255), nullable=True)
 
-<<<<<<< HEAD
     tasks: Mapped[list["Task"]] = relationship(
         back_populates="user", 
         cascade="all, delete-orphan"
     )
-=======
+
     tasks: Mapped[list["Task"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     tasks_daily: Mapped[list["TaskDaily"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     informations: Mapped[list["Information"]] = relationship(back_populates="user", cascade="all, delete-orphan")
->>>>>>> aaace87 (User class for database)

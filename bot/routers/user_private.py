@@ -4,11 +4,7 @@ from aiogram.types import Message
 
 from sqlalchemy import select
 
-<<<<<<< HEAD
-from src.core.models import User, Task
-=======
 from src.core.models import User, Task, TaskDaily, Information
->>>>>>> 7e916c7 (user private router with chat type filter, default commands of bot)
 from src.core.models.db_helper import get_async_session
 
 from ..filters.chat_type_filter import ChatTypeFilter
@@ -30,7 +26,6 @@ async def command_start_handler(message: types.Message):
 
 @router.message(Command("tasks"))
 async def command_tasks_handler(message: Message):
-<<<<<<< HEAD
         username = message.from_user.username
         async for session in get_async_session():
 
@@ -54,7 +49,7 @@ async def command_daily_tasks_handler(message: types.Message):
 @router.message(Command("info"))
 async def command_daily_tasks_handler(message: types.Message):
     await message.answer("Информация: ")
-=======
+
     username = message.from_user.username
     async for session in get_async_session():
         query = await session.execute(
@@ -95,7 +90,7 @@ async def command_user_information_handler(message: types.Message):
         information = query.scalar()
         await message.answer(f"<strong>Информация о вас:</strong> \n\nДолжность: {information.job_title}\n\
 Место работы: {information.work_place}\nВремя работы: {information.timetable}")
->>>>>>> 7e916c7 (user private router with chat type filter, default commands of bot)
+
     
 @router.message(Command("register"))
 async def command_register_handler(message: Message):
