@@ -2,7 +2,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
 from .authx_config import security, config
+<<<<<<< HEAD
 from ...core.config import admin_data
+=======
+>>>>>>> 06bdc42 (crud funcs for users)
 from ...core.models import Admin
 
 async def login_admin(
