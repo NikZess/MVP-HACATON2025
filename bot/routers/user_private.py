@@ -1,4 +1,4 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 
@@ -8,32 +8,40 @@ from src.core.models import User, Task, TaskDaily, Information
 from src.core.models.db_helper import get_async_session
 
 from ..filters.chat_type_filter import ChatTypeFilter
+from ..kbds.inline import MenuCallBack
+from .menu_processing import get_menu_content
 
 router = Router()
 router.message.filter(ChatTypeFilter(["private"]))
 
 @router.message(CommandStart())
 async def command_start_handler(message: types.Message):
-    telegram_id = message.from_user.id
-    async for session in get_async_session():
-        query = select(User).where(User.telegram_id == telegram_id)
-        result = await session.execute(query)
-        user = result.scalar_one_or_none()
-        
-        await message.answer("Привет, это бот помощник 🤖, который поможет тебе в твоей карьере программиста ⌨️")
-        if not user:
-            await message.answer("Чтобы начать пользоваться ботом, зарегистрируйтесь - /register")
+    description, reply_markup = await get_menu_content(level=0, menu_name="main", message=message)
+    await message.answer(description, reply_markup=reply_markup)
+
+@router.callback_query(MenuCallBack.filter())
+async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack):
+    description, reply_markup = await get_menu_content(
+        level=callback_data.level,
+        menu_name=callback_data.menu_name,
+        message=callback.message
+    )
+    try:
+        await callback.message.edit_text(description, reply_markup=reply_markup)
+    except Exception as e:
+        await callback.answer("Не удалось обновить меню. Попробуйте позже.")
+
+    await callback.answer()
+
 
 @router.message(Command("tasks"))
 async def command_tasks_handler(message: Message):
         username = message.from_user.username
         async for session in get_async_session():
-
             tasks = await session.execute(
                 select(Task).where(Task.user_id == username)
             )
             tasks = tasks.scalars().all()
-
             if tasks:
                 text = "Ваши задачи:\n"
                 for task in tasks:
