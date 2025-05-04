@@ -11,9 +11,6 @@ class Settings(BaseSettings):
     db_url: str = f'sqlite+aiosqlite:///{BASE_DIR}/database.db'
     db_echo: bool = True
     
-class AdminData(BaseSettings):
-    admin_username: str = os.getenv("ADMIN_USERNAME")
-    admin_password: str = os.getenv("ADMIN_PASSWORD")
     
 class JWTData(BaseSettings):
     JWT_secret_key: str = os.getenv("JWT_SECRET_KEY")
@@ -21,3 +18,6 @@ class JWTData(BaseSettings):
 class BotToken(BaseSettings):
     bot_token: str = os.getenv("BOT_TOKEN")
 
+settings = Settings()
+JWT_data = JWTData()
+bot_data = BotToken()
