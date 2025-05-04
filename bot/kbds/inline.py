@@ -55,3 +55,19 @@ def get_user_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyb
             ))
     return keyboard.adjust(*sizes).as_markup()
 
+def get_user_daily_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    
+    btns = {
+        "Назад 🔙": "back_menu_from_daily_tasks_menu",
+    }
+    
+    for text, menu_name in btns.items():
+        if menu_name == "back_menu_from_daily_tasks_menu":
+            keyboard.add(InlineKeyboardButton(
+                text=text,
+                callback_data=MenuCallBack(level=0, menu_name="main").pack()
+            ))
+    return keyboard.adjust(*sizes).as_markup()
+
+
