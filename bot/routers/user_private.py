@@ -16,16 +16,44 @@ router.message.filter(ChatTypeFilter(["private"]))
 
 @router.message(CommandStart())
 async def command_start_handler(message: types.Message):
-    description, reply_markup = await get_menu_content(level=0, menu_name="main", message=message)
-    await message.answer(description, reply_markup=reply_markup)
+    reply_markup, _ = await get_menu_content(level=0, menu_name="main")
+    await message.answer("<strong>Главное меню</strong>", reply_markup=reply_markup)
+
 
 @router.callback_query(MenuCallBack.filter())
 async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack):
-    description, reply_markup = await get_menu_content(
+    reply_markup, prefix = await get_menu_content(
         level=callback_data.level,
         menu_name=callback_data.menu_name,
-        message=callback.message
     )
+    username = callback.from_user.username
+    async for session in get_async_session():
+        if prefix == "tasks":
+            main = "<strong>Ваши задачи: </strong>\n\n"
+            query = await session.execute(
+                select(Task).where(Task.username == username)
+            )
+            tasks = query.scalars().all()
+            for task in tasks:
+                main += f"• {task.description}\n"
+            description = main
+        if prefix == "daily_tasks":
+            main = "<strong>Ваши ежедневные задачи: </strong>\n\n"
+            query = await session.execute(
+                select(TaskDaily).where(TaskDaily.username == username)
+            )
+            tasks = query.scalars().all()
+            for task in tasks:
+                main += f"• {task.description}\n"
+            description = main
+        if prefix == "information":
+            main = "<strong>Информация:</strong>\n\n"
+            query = await session.execute(
+                select(Information).where(Information.username == username)
+            )
+            information = query.scalar()
+            description = f"<strong>Информация о вас:</strong> \n\nДолжность: {information.job_title}\n\
+Место работы: {information.work_place}\nВремя работы: {information.timetable}"
     try:
         await callback.message.edit_text(description, reply_markup=reply_markup)
     except Exception as e:
@@ -33,13 +61,12 @@ async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack):
 
     await callback.answer()
 
-
 @router.message(Command("tasks"))
 async def command_tasks_handler(message: Message):
         username = message.from_user.username
         async for session in get_async_session():
             tasks = await session.execute(
-                select(Task).where(Task.user_id == username)
+                select(Task).where(Task.username == username)
             )
             tasks = tasks.scalars().all()
             if tasks:
@@ -50,27 +77,6 @@ async def command_tasks_handler(message: Message):
             else:
                 await message.answer("У вас пока нет задач!")
 
-@router.message(Command("daily_tasks"))
-async def command_daily_tasks_handler(message: types.Message):
-    await message.answer("Ежедневные задачи: ")
-    
-@router.message(Command("info"))
-async def command_daily_tasks_handler(message: types.Message):
-    await message.answer("Информация: ")
-
-    username = message.from_user.username
-    async for session in get_async_session():
-        query = await session.execute(
-            select(Task).where(Task.username == username)
-        )
-        tasks = query.scalars().all()
-        if tasks:
-            text = "Ваши задачи:\n"
-            for task in tasks:
-                text += f"• ✅ {task.description}\n"
-            await message.answer(text)
-        else:
-            await message.answer("У вас пока нет задач!")
 
 @router.message(Command("daily_tasks"))
 async def command_daily_tasks_handler(message: types.Message):
