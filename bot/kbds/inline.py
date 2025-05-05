@@ -5,6 +5,7 @@ from aiogram.filters.callback_data import CallbackData
 class MenuCallBack(CallbackData, prefix="menu"):
     level: float
     menu_name: str
+    page: int = 0
 
 
 def get_user_main_btns(*, level: float, sizes: tuple[int] = (2, 1, 1)) -> InlineKeyboardMarkup:
@@ -38,9 +39,9 @@ def get_user_main_btns(*, level: float, sizes: tuple[int] = (2, 1, 1)) -> Inline
                 text=text,
                 callback_data=MenuCallBack(level=4.0, menu_name=menu_name).pack()
             ))
-        return keyboard.adjust(*sizes).as_markup()
+    return keyboard.adjust(*sizes).as_markup()
 
-def get_user_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyboardMarkup:
+def get_user_tasks_btns(*, level: float, sizes: tuple[int] = (1, )) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
     
     btns = {
@@ -55,7 +56,7 @@ def get_user_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyb
             ))
     return keyboard.adjust(*sizes).as_markup()
 
-def get_user_daily_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyboardMarkup:
+def get_user_daily_tasks_btns(*, level: float, sizes: tuple[int] = (1, )) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
     
     btns = {
@@ -70,7 +71,7 @@ def get_user_daily_tasks_btns(*, level: float, sizes: tuple[int] = (1,)) -> Inli
             ))
     return keyboard.adjust(*sizes).as_markup()
 
-def get_user_information_btns(*, level: float, sizes: tuple[int] = (1,)) -> InlineKeyboardMarkup:
+def get_user_information_btns(*, level: float, sizes: tuple[int] = (1, )) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
     
     btns = {
@@ -81,6 +82,6 @@ def get_user_information_btns(*, level: float, sizes: tuple[int] = (1,)) -> Inli
         if menu_name == "back_menu_from_information_menu":
             keyboard.add(InlineKeyboardButton(
                 text=text,
-                callback_data=MenuCallBack(level=0, menu_name="main").pack()
+                callback_data=MenuCallBack(level=level, menu_name="main").pack()
             ))
     return keyboard.adjust(*sizes).as_markup()
