@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     db_url: str = f'sqlite+aiosqlite:///{BASE_DIR}/database.db'
     db_echo: bool = True
     
-    
+
 class JWTData(BaseSettings):
     JWT_secret_key: str = os.getenv("JWT_SECRET_KEY")
 
