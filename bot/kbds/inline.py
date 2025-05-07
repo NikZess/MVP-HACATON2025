@@ -15,7 +15,7 @@ def get_user_main_btns(*, level: float, sizes: tuple[int] = (2, 1, 1)) -> Inline
         "Общие задачи 📔": "tasks",
         "Ежедневные задачи 📕": "daily_tasks",
         "Информация и помощь ✏️": "information",
-        "Помощь 👁️‍🗨️": "help"
+        "Помощь 👁️‍🗨️": "help",
     }
     
     for text, menu_name in btns.items():
