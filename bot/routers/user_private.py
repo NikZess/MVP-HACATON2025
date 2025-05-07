@@ -22,27 +22,35 @@ async def command_start_handler(message: types.Message):
 
 @router.callback_query(MenuCallBack.filter())
 async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack):
+    print(callback_data)
     reply_markup, prefix = await get_menu_content(
         level=callback_data.level,
         menu_name=callback_data.menu_name,
     )
     username = callback.from_user.username
     async for session in get_async_session():
+        if prefix == "main":
+            description = "<strong>Главное меню</strong>"
         if prefix == "tasks":
             main = "<strong>Ваши задачи: </strong>\n\n"
             query = await session.execute(
                 select(Task).where(Task.username == username)
             )
             tasks = query.scalars().all()
-            for task in tasks:
-                main += f"• {task.description}\n"
-            description = main
+            if not tasks:
+                description = "У вас пока, что нет задач."
+            else:
+                for task in tasks:
+                    main += f"• {task.description}\n"
+                description = main
         if prefix == "daily_tasks":
             main = "<strong>Ваши ежедневные задачи: </strong>\n\n"
             query = await session.execute(
                 select(TaskDaily).where(TaskDaily.username == username)
             )
             tasks = query.scalars().all()
+            if not tasks:
+                description = "У вас пока, что нет ежедневных задач."
             for task in tasks:
                 main += f"• {task.description}\n"
             description = main
@@ -52,7 +60,10 @@ async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack):
                 select(Information).where(Information.username == username)
             )
             information = query.scalar()
-            description = f"<strong>Информация о вас:</strong> \n\nДолжность: {information.job_title}\n\
+            if not information:
+                description = "Информации о вас пока, что нет."
+            else:
+                description = f"<strong>Информация о вас:</strong> \n\nДолжность: {information.job_title}\n\
 Место работы: {information.work_place}\nВремя работы: {information.timetable}"
     try:
         await callback.message.edit_text(description, reply_markup=reply_markup)
