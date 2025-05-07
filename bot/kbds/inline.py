@@ -15,7 +15,7 @@ def get_user_main_btns(*, level: float, sizes: tuple[int] = (2, 1, 1)) -> Inline
         "Общие задачи 📔": "tasks",
         "Ежедневные задачи 📕": "daily_tasks",
         "Информация и помощь ✏️": "information",
-        "Регистрация ®️": "register",
+        "Помощь 👁️‍🗨️": "help"
     }
     
     for text, menu_name in btns.items():
@@ -34,7 +34,7 @@ def get_user_main_btns(*, level: float, sizes: tuple[int] = (2, 1, 1)) -> Inline
                 text=text,
                 callback_data=MenuCallBack(level=3.0, menu_name=menu_name).pack()
             ))
-        if menu_name == "register":
+        if menu_name == "help":
             keyboard.add(InlineKeyboardButton(
                 text=text,
                 callback_data=MenuCallBack(level=4.0, menu_name=menu_name).pack()
@@ -82,6 +82,21 @@ def get_user_information_btns(*, level: float, sizes: tuple[int] = (1, )) -> Inl
         if menu_name == "back_menu_from_information_menu":
             keyboard.add(InlineKeyboardButton(
                 text=text,
-                callback_data=MenuCallBack(level=level, menu_name="main").pack()
+                callback_data=MenuCallBack(level=0, menu_name="main").pack()
+            ))
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_user_help_btns(*, level: float, sizes: tuple[int] = (1, )) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    
+    btns = {
+        "Назад 🔙": "back_menu_from_help_menu",        
+    }
+    
+    for text, menu_name in btns.items():
+        if menu_name == "back_menu_from_help_menu":
+            keyboard.add(InlineKeyboardButton(
+                text=text,
+                callback_data=MenuCallBack(level=0, menu_name="main").pack()
             ))
     return keyboard.adjust(*sizes).as_markup()
