@@ -24,13 +24,11 @@ router = APIRouter(
     dependencies=[Depends(security.access_token_required)]
 )
 async def create_task(
-    username: str,
-    description: str,
+    task_data: TaskCreate,
     session: AsyncSession = Depends(get_async_session)
 ):
     return await crud.create_task(
-        username=username,
-        description=description,
+        task_data=task_data,
         session=session,
     )
 
@@ -56,7 +54,7 @@ async def get_user_tasks(
     return await crud.get_user_tasks(
         username=username,
         session=session,
-    )
+    ),
 
 @router.delete("/common/",
     summary="Удалить все задачи",

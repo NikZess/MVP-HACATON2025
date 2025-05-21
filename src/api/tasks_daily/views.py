@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ...core.models.db_helper import get_async_session
 from . import crud
 from ..auth.authx_config import security
+from .schemas import TaskDailyCreate
 
 router = APIRouter(
     tags=["Daily Tasks"],
@@ -15,13 +16,11 @@ router = APIRouter(
     dependencies=[Depends(security.access_token_required)]
 )   
 async def create_task_daily(
-    username: str,
-    description: str,
+    task_daily_data: TaskDailyCreate,
     session: AsyncSession = Depends(get_async_session)
 ):
     return await crud.create_daily_task(
-        username=username,
-        description=description,
+        task_daily_data=task_daily_data,
         session=session
     )
 
