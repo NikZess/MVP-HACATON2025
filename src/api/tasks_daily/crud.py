@@ -5,14 +5,14 @@ from ...core.models import User
 from sqlalchemy import select
 from typing import Annotated
 from annotated_types import MinLen, MaxLen
+from .schemas import TaskDailyCreate
 
 async def create_daily_task(
-    username: str,
-    description: Annotated[str, MinLen(3), MaxLen(1000)],
+    task_daily_data: TaskDailyCreate,
     session: AsyncSession
 ) -> TaskDaily:
     query = await session.execute(
-        select(User).where(User.username == username)
+        select(User).where(User.username == task_daily_data.username)
     )
     user = query.scalar_one_or_none()
     if not user:
@@ -22,7 +22,7 @@ async def create_daily_task(
         )
     task_daily = TaskDaily(
         username=user.username,
-        description=description
+        description=task_daily_data.description,
     )
     session.add(task_daily)
     await session.commit()

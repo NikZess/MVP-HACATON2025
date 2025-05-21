@@ -9,15 +9,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ...core.models import Task, User
 from sqlalchemy import select
 from typing import Annotated
+from .schemas import TaskCreate
 from annotated_types import MinLen, MaxLen
 
 async def create_task(
-    username: str,
-    description: Annotated[str, MinLen(3), MaxLen(1000)],
+    task_data: TaskCreate,
     session: AsyncSession,
 ) -> Task:
     query = await session.execute(
-        select(User).where(User.username == username)
+        select(User).where(User.username == task_data.username)
     )
     user = query.scalar_one_or_none()
     
@@ -28,7 +28,7 @@ async def create_task(
         )
     task = Task(
         username=user.username,
-        description=description,
+        description=task_data.description,
     )
     session.add(task)
     await session.commit()
