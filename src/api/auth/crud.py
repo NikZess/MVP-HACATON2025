@@ -3,14 +3,14 @@ from sqlalchemy import select
 from fastapi import Response, HTTPException, status
 from .authx_config import security, config
 from ...core.models import Admin
+from .schemas import User
 
 async def login_admin(
+    user_data: User,
     session: AsyncSession,
-    username: str,
-    password: str,
     response: Response,
 ):
-    query = select(Admin).where(Admin.username == username)
+    query = select(Admin).where(Admin.username == user_data.username)
     result = await session.execute(query)
     user = result.scalar_one_or_none()
     
@@ -20,7 +20,7 @@ async def login_admin(
             detail="Администратор не найден"
         )
     
-    if user.password != password:
+    if user.password != user_data.password:
         raise HTTPException (
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный пароль"
