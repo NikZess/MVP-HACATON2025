@@ -12,12 +12,12 @@ from .core.models import db_helper
 from .core.models import Base
 from .core.utils.templates import templates
 
-from .api.auth.views import router as auth_router
-from .api.users.views import router as users_router
-from .api.tasks.views import router as tasks_router
-from .api.tasks_daily.views import router as tasks_daily_router
-from .api.information.views import router as informations_router
-from .api.pages.views import router as pages_router
+from .api.v1.auth.views import router as auth_router
+from .api.v1.users.views import router as users_router
+from .api.v1.tasks.views import router as tasks_router
+from .api.v1.tasks_daily.views import router as tasks_daily_router
+from .api.v1.information.views import router as informations_router
+from .api.v1.pages.views import router as pages_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
